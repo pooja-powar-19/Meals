@@ -1,0 +1,57 @@
+
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
+import 'package:meals/providers/meals_provider.dart';
+
+enum Filter { 
+  glutenFree, 
+  lactoseFree, 
+  vegeterian, 
+  veganFree 
+}
+
+class FilterNotifier extends StateNotifier<Map<Filter,bool>>{
+  FilterNotifier() : super({
+    Filter.glutenFree:false,
+    Filter.lactoseFree:false,
+    Filter.vegeterian:false,
+    Filter.veganFree:false,
+  });//initial State
+
+
+void setFilters(Map<Filter,bool> choosenFilters){
+    state = choosenFilters;
+}
+void setFilter(Filter filter, bool isActive){
+  //state[filter] = isActive //not allowed => mutating state in provider is not allowed
+  state = {
+    ...state,
+    filter:isActive,
+  };
+}
+}
+
+
+final filterProvider = StateNotifierProvider<FilterNotifier,Map<Filter,bool>>((ref) => FilterNotifier());
+
+final filterMealsProvider = Provider((ref){
+  final meals = ref.watch(mealsProvider);
+  final activeFilters = ref.watch(filterProvider);
+  return meals.where((meal) { //used using riverpod provider
+      if (activeFilters[Filter.glutenFree]! && !meal.isGlutenFree) {
+        return false;
+      }
+      if (activeFilters[Filter.lactoseFree]! && !meal.isLactoseFree) {
+        return false;
+      }
+      if (activeFilters[Filter.vegeterian]! && !meal.isVegetarian) {
+        return false;
+      }
+      if (activeFilters[Filter.veganFree]! && !meal.isVegan) {
+        return false;
+      }
+      return true;
+    }).toList();
+ 
+});
