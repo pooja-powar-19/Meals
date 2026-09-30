@@ -33,13 +33,16 @@ class MealItem extends StatelessWidget {
         },
         child: Stack( //Text on Image like zIndex
           children: [
-            FadeInImage(
-              placeholder: MemoryImage(kTransparentImage), 
-              image: NetworkImage(meal.imageUrl),
-              fit: BoxFit.cover,
-              height: 200,
-              width: double.infinity,
-              ),
+            Hero( //for animation widget
+              tag:meal.id,
+              child: FadeInImage(
+                placeholder: MemoryImage(kTransparentImage), 
+                image: NetworkImage(meal.imageUrl),
+                fit: BoxFit.cover,
+                height: 200,
+                width: double.infinity,
+                ),
+            ),
               Positioned(
                 bottom: 0,right: 0,left: 0,
                 child: Container(
